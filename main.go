@@ -1,0 +1,23 @@
+package main
+
+import (
+	"fmt"
+	"golang.org/x/exp/slog"
+	"triforce-blitz/python"
+)
+
+func main() {
+	interpreter, err := python.FindInterpreter(&python.LocalFinder{})
+	if err != nil {
+		slog.Error("failed to find Python", err)
+	}
+	version, err := interpreter.Version()
+	if err != nil {
+		slog.Error("failed to get Python version", err)
+	}
+	slog.Info("Python version: " + version)
+	err = interpreter.Run("C:\\usr\\share\\triforce-blitz\\generators\\v7.1.3-blitz-0.40\\OoTRandomizer.py")
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to execute OoTRandomizer"), err)
+	}
+}
