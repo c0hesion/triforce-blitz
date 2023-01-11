@@ -1,20 +1,20 @@
 package python
 
 import (
-	"bufio"
 	"fmt"
-	"golang.org/x/exp/slog"
+	"io"
 	"os/exec"
 	"regexp"
 	"strings"
 )
 
 var (
-	pattern = regexp.MustCompile(`^Python (\d+)(\.\d+)(\.\d+)$`)
+	versionPattern = regexp.MustCompile(`^Python (\d+)(\.\d+)(\.\d+)$`)
 )
 
 type Runner interface {
-	Run(path string, arg ...string) error
+	RunScript(path string, stdout io.Writer, stderr io.Writer, arg ...string) error
+	Run(stdin io.Reader, stdout io.Writer, stderr io.Writer, arg ...string) error
 }
 
 type Interpreter interface {
@@ -30,21 +30,24 @@ func (i *LocalInterpreter) command(arg ...string) *exec.Cmd {
 	return exec.Command(i.path, arg...)
 }
 
-func (i *LocalInterpreter) Run(entrypoint string, arg ...string) error {
+func (i *LocalInterpreter) RunScript(entrypoint string, stdout io.Writer, stderr io.Writer, arg ...string) error {
 	cmd := i.command(append([]string{entrypoint}, arg...)...)
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return err
-	}
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
 	if err := cmd.Start(); err != nil {
 		return err
 	}
-	go func() {
-		s := bufio.NewScanner(stderr)
-		for s.Scan() {
-			slog.Warn(s.Text())
-		}
-	}()
+	return cmd.Wait()
+}
+
+func (i *LocalInterpreter) Run(stdin io.Reader, stdout io.Writer, stderr io.Writer, arg ...string) error {
+	cmd := i.command(arg...)
+	cmd.Stdin = stdin
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+	if err := cmd.Start(); err != nil {
+		return err
+	}
 	return cmd.Wait()
 }
 
@@ -55,7 +58,7 @@ func (i *LocalInterpreter) Version() (string, error) {
 		return "", err
 	}
 	version := strings.TrimSpace(string(b))
-	if !pattern.MatchString(version) {
+	if !versionPattern.MatchString(version) {
 		return version, fmt.Errorf("output does not match valid Python version")
 	}
 	return strings.TrimPrefix(version, "Python "), nil
