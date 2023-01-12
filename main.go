@@ -1,14 +1,18 @@
 package main
 
 import (
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"golang.org/x/exp/slog"
-	"path/filepath"
+	"net/http"
 	"triforce-blitz/python"
 	"triforce-blitz/randomizer"
 	"triforce-blitz/util"
 )
 
 var (
+	router      = chi.NewRouter()
+	rando       = randomizer.New(`C:\usr\share\triforce-blitz\generators\v7.1.3-blitz-0.40`)
 	interpreter = util.Must(python.FindInterpreter(&python.LocalFinder{}))
 )
 
@@ -18,11 +22,13 @@ func main() {
 		slog.Error("failed to get Python version", err)
 	}
 	slog.Info("Python version: " + version)
-	// attempt generating a TFB seed
-	r := randomizer.New(`C:\usr\share\triforce-blitz\generators\v7.1.3-blitz-0.40`)
-	settings := randomizer.DefaultSettings()
-	settings.OutputPath = filepath.Join(`C:\usr\share\triforce-blitz\seeds`, settings.Seed)
-	if err := r.Generate(interpreter, settings); err != nil {
-		slog.Error("could not generate seed", err)
+	router.Use(middleware.Logger)
+	registerHttpRoutes()
+	if err := http.ListenAndServe(":8080", router); err != nil {
+		slog.Error("http failed", err)
 	}
+}
+
+func registerHttpRoutes() {
+	router.Post("/seeds", util.ApiHandler(generateSeed))
 }
