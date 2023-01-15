@@ -1,3 +1,7 @@
+github.com/c0hesion/httpx v0.0.0-20230114183127-6b050406a996 h1:4tM+NGtboWZusCLvTlRjx08sy2F91Oue2k3MW0dCn+w=
+github.com/c0hesion/httpx v0.0.0-20230114183127-6b050406a996/go.mod h1:5k58PC51JhlglHaga+leHGXukGYs9TXMipp0iQQ5yq4=
+github.com/c0hesion/httpx v0.0.0-20230115123234-d3f49b1ec9c4 h1:fc4lysJ7nBpUoMUKaEzCM/teh+edB8vyQ2QLwxrn5GY=
+github.com/c0hesion/httpx v0.0.0-20230115123234-d3f49b1ec9c4/go.mod h1:5k58PC51JhlglHaga+leHGXukGYs9TXMipp0iQQ5yq4=
 github.com/go-chi/chi/v5 v5.0.8 h1:lD+NLqFcAi1ovnVZpsnObHGW4xb4J8lNmoYVfECH1Y0=
 github.com/go-chi/chi/v5 v5.0.8/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
 github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=

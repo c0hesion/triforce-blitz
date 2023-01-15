@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/c0hesion/httpx"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"golang.org/x/exp/slog"
@@ -30,5 +31,5 @@ func main() {
 }
 
 func registerHttpRoutes() {
-	router.Post("/seeds", util.ApiHandler(generateSeed))
+	router.Post("/seeds", httpx.Handler[SeedInformation](generateSeed))
 }
