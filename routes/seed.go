@@ -1,4 +1,4 @@
-package main
+package routes
 
 import (
 	"github.com/c0hesion/httpx"
@@ -20,7 +20,7 @@ func generateSeed(r *httpx.Request[any]) *httpx.Response {
 	id := uuid.NewString()
 	requestedAt := time.Now()
 	settings := randomizer.DefaultSettings()
-	settings.OutputPath = filepath.Join(`C:\usr\share\triforce-blitz\seeds`, id)
+	settings.OutputPath = filepath.Join(SeedsDir, id)
 	if err := rando.Generate(interpreter, settings); err != nil {
 		return httpx.InternalServerError(err)
 	}
