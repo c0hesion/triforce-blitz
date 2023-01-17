@@ -2,6 +2,7 @@ package randomizer
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -20,14 +21,28 @@ func (v *Version) IsBranchVersion() bool {
 	return v.Branch != ""
 }
 
+func (v *Version) String() string {
+	if v.IsBranchVersion() {
+		return fmt.Sprintf(
+			"%d.%d.%d-%s-%d.%d",
+			v.Major, v.Minor, v.Patch,
+			v.Branch, v.BranchMajor, v.BranchMinor,
+		)
+	} else {
+		return fmt.Sprintf(
+			"%d.%d.%d",
+			v.Major, v.Minor, v.Patch,
+		)
+	}
+}
+
 var (
 	versionPattern = regexp.MustCompile(`^v?\d+(\.\d+){2}(-\w+-\d+(\.\d+))?$`)
 )
 
-func ParseVersionFromString(s string) (v *Version, err error) {
-	v = new(Version)
+func ParseVersionFromString(s string) (v Version, err error) {
 	if !versionPattern.MatchString(s) {
-		return nil, errors.New("version does not match pattern")
+		return v, errors.New("version does not match pattern")
 	}
 	s = strings.TrimPrefix(s, "v")
 	versionStr, branch, branchVersionStr := versionTokens(s)
